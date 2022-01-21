@@ -3,8 +3,14 @@
 
 let counter = 0;
 let productArray = [];
-let counterMax = 3;
-const myContainer=document.getElementById('results');
+let counterMax = 15;
+let indexArray= [];
+const myContainer=document.getElementById('images');
+
+
+let image1=document.querySelector('div img:first-child');
+let image2=document.querySelector('div img:nth-child(2)');
+let image3=document.querySelector('div img:nth-child(3)');
 
 
 function Product (name, filetype = 'jpg'){
@@ -14,6 +20,7 @@ function Product (name, filetype = 'jpg'){
   this.src = `img/${name}.${filetype}`;
   productArray.push(this);
 }
+
 
 new Product ('bag');
 new Product ('banana');
@@ -37,36 +44,111 @@ new Product ('wine-glass');
 
 
 
-console.log(productArray);
 function selectRandomProduct(){
   return Math.floor(Math.random() * productArray.length);
 }
 
 function renderProduct (){
-
-// create randomized products and put them in an array.
-  let randomProductArray = [];
-  let product1= selectRandomProduct();
-  randomProductArray.push(product1);
-  let product2= selectRandomProduct();
-  // verify that product 1 isnt the same as product 2 then add
-  while (product1===product2){
-    product2=selectRandomProduct();
-    console.log(randomProductArray);
+  while (indexArray.length < 6){
+    let randomNumber = selectRandomProduct();
+    if(!indexArray.includes(randomNumber)){
+      indexArray.push(randomNumber);
+    }
   }
-  randomProductArray.push(product2);
-  // verify that product 3 isnt already in the array then add
-  let product3= selectRandomProduct();
-  while(randomProductArray.includes(product3)){
-    product3= selectRandomProduct();
-    console.log(product3);
-  }
-  randomProductArray.push(product3);
 
-  console.log(randomProductArray);
+
+  let product1 = indexArray.shift();
+  let product2 = indexArray.shift();
+  let product3 = indexArray.shift();
+
+  image1.src=productArray[product1].src;
+  image1.alt=productArray[product1].name;
+  image2.src=productArray[product2].src;
+  image3.src=productArray[product3].src;
+  image2.alt=productArray[product2].name;
+  image3.alt=productArray[product3].name;
+  productArray[product1].views++;
+  productArray[product2].views++;
+  productArray[product3].views++;
 }
 
-renderProduct();
+function handleClick(event){
 
+  counter++;
+  let productClicked = event.target.alt;
+  for (let i =0; i <productArray.length; i++){
+    if (productClicked===productArray[i].name){
+      productArray[i].likes++;
+      break;
+    }
+  }
+  if (counter === counterMax){
+    myContainer.removeEventListener('click',handleClick);
+    renderChart();
+  }
+  renderProduct();
+}
+
+
+
+function renderChart(){
+  let productNames =[];
+  let productLikes =[];
+  let productViews = [];
+  for (let i = 0; i < productArray.length; i++) {
+    productNames.push(productArray[i].name);
+    productLikes.push(productArray[i].likes);
+    productViews.push(productArray[i].views);
+  }
+  console.log(productNames);
+  const data = {
+    labels: productNames,
+    datasets: [{
+      label: 'Views',
+      data: productViews,
+      backgroundColor: [
+        'rgba(255, 200, 200, 1)'
+      ],
+      borderColor: [
+        'rgb(0, 159, 64)',
+      ],
+      borderWidth: 1
+    },
+    {
+      label: 'Votes',
+      data: productLikes,
+      backgroundColor: [
+        'rgba(255, 99, 0, 1)',
+      ],
+      borderColor: [
+        'rgb(255, 99, 132)',
+      ],
+      borderWidth: 1
+    }]
+  };
+  const config = {
+    type: 'bar',
+    data: data,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    },
+  };
+  const chart = document.getElementById('myChart');
+  const myChart = new Chart(chart, config); // squiggly stays =(
+}
+
+
+
+
+
+
+
+
+renderProduct();
+myContainer.addEventListener('click', handleClick);
 
 

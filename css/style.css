@@ -8,7 +8,7 @@ main {
   display: grid;
   grid-template-columns: 20rem 1fr 1fr 1fr;
   grid-template-rows: 100px 350px 100px 350px ;
-  background-color: red;
+  background-color: wheat;
 }
 
 #logo {
@@ -20,6 +20,7 @@ h1 {
   grid-row-start: 1;
   grid-row-end: 2;
   background-color: aqua;
+  width: 960px;
 
 }
 div {
@@ -35,8 +36,11 @@ div img {
   max-height: 210px;
   vertical-align: middle;
   margin-top: 95px;
+  cursor: pointer;
 }
- p {
+ article {
+   width: 315px;
+  height:250px;
   display: grid;
   font-size: 20px;
   grid-column: 2/5;
