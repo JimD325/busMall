@@ -13,13 +13,21 @@ let image2=document.querySelector('div img:nth-child(2)');
 let image3=document.querySelector('div img:nth-child(3)');
 
 
-function Product (name, filetype = 'jpg'){
+function Product (name, filetype = 'jpg', views, likes){
   this.likes = 0;
   this.views=0;
   this.name=name;
   this.src = `img/${name}.${filetype}`;
   productArray.push(this);
 }
+
+function makeAProduct (name, filetype = 'jpg'){
+  let productObj = new Product (name, filetype = 'jpg', likes, views);
+  productArray.push(productObj);
+  productObj.renderProduct();
+}
+
+
 
 
 new Product ('bag');
@@ -60,7 +68,7 @@ function renderProduct (){
   let product1 = indexArray.shift();
   let product2 = indexArray.shift();
   let product3 = indexArray.shift();
-
+  
   image1.src=productArray[product1].src;
   image1.alt=productArray[product1].name;
   image2.src=productArray[product2].src;
@@ -83,10 +91,17 @@ function handleClick(event){
     }
   }
   if (counter === counterMax){
+    storeProduct();
     myContainer.removeEventListener('click',handleClick);
     renderChart();
   }
   renderProduct();
+}
+
+function storeProduct(){
+  let stringifiedProducts=JSON.stringify(productArray);
+  localStorage.setItem('products',stringifiedProducts);
+  console.log(localStorage);
 }
 
 
@@ -95,17 +110,37 @@ function renderChart(){
   let productNames =[];
   let productLikes =[];
   let productViews = [];
+  let previousLikes = [];
+  let previousViews =[];
+  let combinedLikes =[];
+  let combinedViews =[];
   for (let i = 0; i < productArray.length; i++) {
     productNames.push(productArray[i].name);
     productLikes.push(productArray[i].likes);
     productViews.push(productArray[i].views);
   }
-  console.log(productNames);
+  function getProduct() {
+    let productChoice = localStorage.getItem('products');
+    console.log(productChoice);
+    if (productChoice) {
+      let parsedProduct = JSON.parse(productChoice);
+      console.log(parsedProduct);
+      for (let products of parsedProduct){
+        let name = Product.name;
+        let likes = Product.likes;
+        let views = Product.views;
+        let source = Product.src;
+        makeAProduct(name);
+      }
+    }
+  }
+  getProduct();
+
   const data = {
     labels: productNames,
     datasets: [{
       label: 'Views',
-      data: productViews,
+      data: combinedViews,
       backgroundColor: [
         'rgba(255, 200, 200, 1)'
       ],
@@ -116,7 +151,7 @@ function renderChart(){
     },
     {
       label: 'Votes',
-      data: productLikes,
+      data: combinedLikes,
       backgroundColor: [
         'rgba(255, 99, 0, 1)',
       ],
